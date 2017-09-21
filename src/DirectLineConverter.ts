@@ -1,6 +1,7 @@
 import { Message } from "botframework-directlinejs";
 import { AbstractConverter } from "./AbstractConverter";
 import { AudioConverter } from "./AudioConverter";
+import { HeroCard } from "./HeroCard";
 import { VideoConverter } from "./VideoConverter";
 
 export class DirectLineConverter {
@@ -23,12 +24,16 @@ export class DirectLineConverter {
         case "application/vnd.microsoft.card.audio":
           converter = new AudioConverter();
           break;
+        case "application/vnd.microsoft.card.hero":
+          converter = new HeroCard();
+          break;
         default:
           break;
       }
 
       if (converter) {
-        lineMessages.concat(converter.DirectLineToLine(attachment));
+        const message = converter.DirectLineToLine(attachment);
+        lineMessages.push(message);
       } else {
         lineMessages.push({
           text: `Unsupported DirectLine type: ${attachment.contentType}`,
@@ -37,6 +42,7 @@ export class DirectLineConverter {
       }
     }
 
+    console.log('LINE MESSAGES', lineMessages);
     return lineMessages;
   }
 }
